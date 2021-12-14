@@ -23,9 +23,9 @@ docker-compose stop //Detener todos los contenedores
 Se debe correr el dump de la base de datos que se encuentra en: docker-mysql/scripts-mysql y configurar las siguientes variables de entorno:
 
 ```
-host
-username
-password
+host:localhost
+username:{{usuario de la base de datos}}
+password:{{contraseña de la base de datos}}
 ```
 ## Modelo Relacional
 
