@@ -1,0 +1,266 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Gourmet Restaurant API
+  description: API Rest
+host: localhost:8080
+schemes:
+  - http
+produces:
+  - application/json
+tags:
+  - name: encuestas
+    description: Servicios relacionados con la encuesta
+paths:
+  /encuestas:
+    post:
+      tags:
+        - encuestas
+      summary: Registra las respuestas de una encuesta
+      description: Este endpoint requiere el envio del objeto RespuestaDTO con los siguientes parametros en el body request:correoElectronico,idEncuesta y preguntas
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          description: Información necesaria para registrar la encuesta
+          required: true
+          schema:
+            type: object
+            example:
+              {
+                 "correoElectronico":"simon.bolivar@gmail.com",
+                 "idEncuesta":1,
+                 "preguntas":[
+                    {
+                       "id":1,
+                       "opciones":[
+                          {
+                             "id":1
+                          }
+                       ]
+                    },
+                    {
+                       "id":2,
+                       "comentarios":"La amabilidad del personal"
+                    },
+                    {
+                       "id":3,
+                       "comentarios":"Pollo bañado en salsa bechamel"
+                    },
+                    {
+                       "id":4,
+                       "opciones":[
+                          {
+                             "id":4
+                          },
+                          {
+                             "id":5
+                          }
+                       ]
+                    }
+                 ]
+              }
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: La solicitud esta mal formada o le faltaba un campo obligatorio
+          schema:
+            $ref: '#/definitions/Error400'
+        '404':
+          description: Valor de búsqueda no encontrado
+          schema:
+            $ref: '#/definitions/Error404'
+        '500':
+          description: Se ha producido un problema al procesar la solicitud y el servidor ha fallado al salir de la acción
+          schema:
+            $ref: '#/definitions/Error500'
+  /encuestas/{idEncuesta}:
+    get:
+      tags:
+        - encuestas
+      summary: Lista las preguntas y opciones de respuesta de una encuesta
+      description: Este endpoint requiere el envio del id de la encuesta
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: idEncuesta
+          in: path
+          description: id de la encuesta
+          required: true
+          type: number
+          example: '1'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            example: |-
+              {
+                  "id": 1,
+                  "titulo": "Percepcion Diciembre",
+                  "preguntas": [
+                      {
+                          "id": 1,
+                          "enunciado": "¿Como le parecio la atención brindada por nuestros meseros?",
+                          "tipoPregunta": {
+                              "id": 2,
+                              "valor": "Cerrada"
+                          },
+                          "opciones": [
+                              {
+                                  "id": 1,
+                                  "valor": "Buena"
+                              },
+                              {
+                                  "id": 2,
+                                  "valor": "Regular"
+                              },
+                              {
+                                  "id": 3,
+                                  "valor": "Mala"
+                              }
+                          ]
+                      },
+                      {
+                          "id": 2,
+                          "enunciado": "¿Que fue lo que más le gusto o disgusto del servicio?",
+                          "tipoPregunta": {
+                              "id": 1,
+                              "valor": "Abierta"
+                          }
+                      },
+                      {
+                          "id": 3,
+                          "enunciado": "¿Cual es el nombre del plato que consumio?",
+                          "tipoPregunta": {
+                              "id": 1,
+                              "valor": "Abierta"
+                          }
+                      },
+                      {
+                          "id": 4,
+                          "enunciado": "¿Como calificaria el sabor del plato degustado?",
+                          "tipoPregunta": {
+                              "id": 2,
+                              "valor": "Cerrada"
+                          },
+                          "opciones": [
+                              {
+                                  "id": 4,
+                                  "valor": "Delicioso"
+                              },
+                              {
+                                  "id": 5,
+                                  "valor": "Moderado"
+                              },
+                              {
+                                  "id": 2,
+                                  "valor": "Regular"
+                              },
+                              {
+                                  "id": 6,
+                                  "valor": "Horrible"
+                              }
+                          ]
+                      }
+                  ]
+              }
+        '400':
+          description: La solicitud esta mal formada o le faltaba un campo obligatorio
+          schema:
+            $ref: '#/definitions/Error400'
+        '404':
+          description: Valor de búsqueda no encontrado
+          schema:
+            $ref: '#/definitions/Error404'
+        '500':
+          description: Se ha producido un problema al procesar la solicitud y el servidor ha fallado al salir de la acción
+          schema:
+            $ref: '#/definitions/Error500'
+definitions:
+  RespuestaDTO:
+    type: object
+    properties:
+      correoElectronico:
+        type: string
+        example: simon.bolivar@gmail.com
+        description: correo electrónico del cliente
+      idEncuesta:
+        type: integer
+        example: '1'
+        description: id de la encuesta
+      preguntas:
+        type: array
+        description: Respuestas de la encuesta por pregunta
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: '1'
+              description: id de la pregunta contestada
+            opciones:
+              type: array
+              description: Opciones marcadas en las respuestas cerradas de la encuesta
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: '1'
+                    description: id de la opcion marcada
+            comentarios:
+              type: string
+              example: La amabilidad del personal
+              description: Respuesta dada para las preguntas abiertas de la encuesta
+  Error400:
+    type: object
+    properties:
+      date:
+        type: string
+        description: Fecha en el que se produjo el error
+        example: '2021-12-10T00:56:35.855'
+      message:
+        type: string
+        description: Mensaje del error
+        example: Se debe enviar un correo electronico
+      details:
+        type: string
+        description: path del servicio
+        example: uri=/encuestas
+  Error404:
+    type: object
+    properties:
+      date:
+        type: string
+        description: Fecha en el que se produjo el error
+        example: '2021-12-10T00:56:35.855'
+      message:
+        type: string
+        description: Mensaje del error
+        example: 'No se encontro la encuesta con el id: 4'
+      details:
+        type: string
+        description: path del servicio
+        example: uri=/encuestas/4
+  Error500:
+    type: object
+    properties:
+      date:
+        type: string
+        description: Fecha en el que se produjo el error
+        example: '2021-12-10T00:56:35.855'
+      status:
+        type: integer
+        description: El estado de la respuesta
+        example: '500'
+      path:
+        type: string
+        description: path del servicio
+        example: uri=/encuestas
